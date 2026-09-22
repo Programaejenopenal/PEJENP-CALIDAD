@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-09-22T04:28:34.278Z",
+    "end": "2026-09-22T04:29:07.960Z",
+    "duration": 33682,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "93aed687-b55a-44a3-991a-905f84cbbd31",
+      "title": "",
+      "fullFile": "cypress\\e2e\\PEJENP\\03_EJENP_DIG_EXP.cy.js",
+      "file": "cypress\\e2e\\PEJENP\\03_EJENP_DIG_EXP.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "f2244c75-47b1-49e1-b52b-daf3224a4f0a",
+          "title": "Digitalizacion de Expediente",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Registro de nuevo expediente",
+              "fullTitle": "Digitalizacion de Expediente Registro de nuevo expediente",
+              "timedOut": null,
+              "duration": 32788,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Entrar al portal\ncy.visit('https://panel-preprd-sideju.pj.gob.pe/');\ncy.screenshot('01-portal-inicial');\n// Validar redirección a identidad\ncy.location('origin', {\n  timeout: 20000\n}).should('include', 'identidad-preprd-sideju');\n// Manejar login\ncy.origin('https://identidad-preprd-sideju.pj.gob.pe', () => {\n  cy.get('#hiddenUsername', {\n    timeout: 10000\n  }).invoke('val', Cypress.env('username'));\n  cy.get('#hiddenPassword').invoke('val', Cypress.env('password'));\n  cy.screenshot('02-login-credenciales');\n  cy.get('#kc-login').click();\n});\n// Validar regreso al portal\ncy.location('origin', {\n  timeout: 20000\n}).should('include', 'panel-preprd-sideju');\ncy.screenshot('03-regreso-portal');\n// Digitalización de expediente\ncy.readFile('cypress/fixtures/expediente.json').then(data => {\n  const expediente = data.numeroExpediente;\n  expect(expediente).to.not.be.undefined;\n  cy.get('#search-process', {\n    timeout: 10000\n  }).scrollIntoView().clear().type(expediente);\n});\n// Hacer clic en el botón de búsqueda\ncy.get('#search-button', {\n  timeout: 10000\n}).should('be.visible').click();\ncy.screenshot('04-busqueda-expediente');\n// Interceptar apertura de nueva pestaña y capturar la URL\nlet nuevaUrl;\ncy.window().then(win => {\n  cy.stub(win, 'open').callsFake(url => {\n    nuevaUrl = url; // guardar la URL\n  }).as('windowOpen');\n});\n// Hacer clic en el botón \"Expediente digital\"\ncy.get('button[data-testid=\"button-open-pasta\"]', {\n  timeout: 10000\n}).should('be.visible').first().click();\n// Leer el PDF como base64 ANTES de entrar al cy.origin(),\n// porque dentro del origin no hay acceso al filesystem del proyecto.\ncy.fixture('documento_expediente.pdf', 'base64').then(fileContent => {\n  // Ahora visitar la URL capturada en el mismo navegador\n  cy.then(() => {\n    expect(nuevaUrl, 'La URL del expediente digital debe estar definida').to.not.be.undefined;\n    // Visitar el nuevo dominio\n    cy.visit(nuevaUrl);\n    // 🔑 Usar cy.origin para comandos en el nuevo dominio,\n    // pasando fileContent como argumento serializado (args)\n    cy.origin('https://npd-preprd-sideju.pj.gob.pe', {\n      args: {\n        fileContent\n      }\n    }, ({\n      fileContent\n    }) => {\n      // Los listeners de uncaught:exception registrados fuera de cy.origin()\n      // NO se propagan a este contexto aislado (spec bridge de otro dominio).\n      // Hay que registrarlo aquí dentro, y usar cy.on (no Cypress.on).\n      cy.on('uncaught:exception', err => {\n        if (err.message.includes('ResizeObserver loop') || err.message.includes('pattern')) {\n          return false;\n        }\n      });\n      cy.url().should('include', 'npd-preprd-sideju.pj.gob.pe');\n      // Ajustar validación: buscar un elemento confiable en lugar de texto\n      cy.get('body', {\n        timeout: 10000\n      }).should('be.visible'); // asegura que cargó la página\n      cy.get('button, h1, h2', {\n        timeout: 10000\n      }).should('exist'); // valida que hay contenido interactivo\n      cy.screenshot('05-expediente-digital');\n      // Hacer clic en el botón \"Importar archivos\" con data-testid ImportaOpenModalrId\n      cy.get('[data-testid=\"ImportaOpenModalrId\"]', {\n        timeout: 10000\n      }).should('be.visible').click();\n      // Hacer clic en el botón \"Importar archivos\" con data-testid ImportarArquivos\n      cy.get('[data-testid=\"ImportarArquivos\"]', {\n        timeout: 10000\n      }).should('be.visible').click();\n      // Hacer clic en el botón \"PDF\" dentro del modal\n      cy.get('label[for=\"inputFilesDESKTOP\"]', {\n        timeout: 10000\n      }).should('be.visible').click();\n      // Adjuntar el archivo PDF reconstruido desde base64\n      // (dentro de cy.origin() no se pueden usar rutas relativas del proyecto)\n      cy.get('input#inputFilesDESKTOP', {\n        timeout: 10000\n      }).should('exist').selectFile({\n        contents: Cypress.Buffer.from(fileContent, 'base64'),\n        fileName: 'documento_expediente.pdf',\n        mimeType: 'application/pdf'\n      }, {\n        force: true\n      });\n      // Hacer clic en el botón \"Enviar\"\n      cy.get('[data-testid=\"botaoEnviar\"]', {\n        timeout: 10000\n      }).should('be.visible').click();\n      // Esperar hasta que el contenedor se muestre\n      cy.get('[data-testid=\"collapseContainer\"]', {\n        timeout: 30000\n      }) // espera hasta 30 segundos\n      .should('be.visible');\n      // Esperar hasta que aparezca el checkbox y hacer clic\n      // Nota: el input real de MUI está oculto con opacity:0 (el cuadro visible\n      // es el <svg> hermano), por eso NO se valida .should('be.visible') aquí:\n      // siempre fallaría aunque el checkbox exista y sea funcional.\n      cy.get('[data-testid=\"checkboxAgLiberacao\"]', {\n        timeout: 40000\n      }).should('exist') // asegura que esté en el DOM\n      .check({\n        force: true\n      }); // marca el checkbox aunque esté renderizado con estilos ocultos\n      // Esperar hasta que aparezca el botón \"Firmar e incorporar\" y hacer clic\n      cy.contains('button', 'Firmar e incorporar', {\n        timeout: 20000\n      }).as('btnFirmarIncorporar');\n      cy.get('@btnFirmarIncorporar').should('be.visible');\n      cy.get('@btnFirmarIncorporar').click({\n        force: true\n      });\n      // Una vez visible, hacer clic en el botón \"Confirmar posición\"\n      cy.contains('button', 'Confirmar posición', {\n        timeout: 20000\n      }).should('be.visible').click();\n      // Esperar hasta que aparezca el modal \"Firmar documentos\"\n      cy.get('[role=\"dialog\"] [data-testid=\"bit4id-iframe-modal-title\"]', {\n        timeout: 30000\n      }).should('be.visible').and('contain.text', 'Firmar documentos');\n      // Abrir el combo \"Motivo de la firma digital\"\n      // 👉 Rompemos la cadena: react-select re-renderiza el wrapper al abrir el menú,\n      // así que si encadenamos should().click() en el mismo comando, Cypress puede\n      // terminar clickeando una referencia del DOM que ya fue reemplazada.\n      cy.get('[data-testid=\"bit4id-reason-select\"]', {\n        timeout: 20000\n      }).as('reasonSelect');\n      cy.get('@reasonSelect').should('be.visible');\n      cy.get('@reasonSelect').click();\n      // Esperar a que aparezca el menú desplegable\n      cy.get('div.bit4id-reason-select__menu', {\n        timeout: 10000\n      }).should('be.visible');\n      // Seleccionar la opción \"Soy titular\"\n      // 👉 Rompemos la cadena y volvemos a obtener el elemento\n      cy.contains('div', 'Soy titular', {\n        timeout: 10000\n      }).as('opcionTitular');\n      cy.get('@opcionTitular').click();\n      // Hacer clic en el botón \"Firmar\"\n      // 👉 Evitamos depender de clases dinámicas de JSS/MUI (jss580, jss590, etc.),\n      // que cambian entre builds/cargas. En su lugar, acotamos la búsqueda al\n      // diálogo visible actual y usamos match EXACTO de texto (/^Firmar$/) para no\n      // confundirlo con \"Firmar e incorporar\" u otros botones que contengan \"Firmar\".\n      //cy.get('[role=\"dialog\"]')\n      //.filter(':visible')\n      //.last()\n      //.contains('button', /^Firmar$/, { timeout: 20000 })\n      //.as('btnFirmar');\n      //cy.get('@btnFirmar').should('be.visible');\n      //cy.get('@btnFirmar').click({ force: true });\n    });\n  });\n});",
+              "err": {},
+              "uuid": "73281d3b-7bc6-4b0c-85c0-df9f1da798e6",
+              "parentUUID": "f2244c75-47b1-49e1-b52b-daf3224a4f0a",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "73281d3b-7bc6-4b0c-85c0-df9f1da798e6"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 32788,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

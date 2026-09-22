@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-09-22T04:27:38.263Z",
+    "end": "2026-09-22T04:28:32.172Z",
+    "duration": 53909,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "4e7852fe-2210-44a9-9ed8-25a06cabbb27",
+      "title": "",
+      "fullFile": "cypress\\e2e\\PEJENP\\02_EJENP_REG_EXP.cy.js",
+      "file": "cypress\\e2e\\PEJENP\\02_EJENP_REG_EXP.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "b81ce59a-9c47-4087-b75c-2807c7d4b5bc",
+          "title": "Registro de Expediente",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Registro de nuevo expediente",
+              "fullTitle": "Registro de Expediente Registro de nuevo expediente",
+              "timedOut": null,
+              "duration": 53001,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Entrar al portal\n// ambiente preproductivo\ncy.visit('https://panel-preprd-sideju.pj.gob.pe/');\n//ambiente de pruebas\n//cy.visit('https://panel-pruebas-sideju.pj.gob.pe/')\n// Esperar redirección a identidad\ncy.location('origin', {\n  timeout: 20000\n})\n//ambiente preproductivo \n.should('include', 'identidad-preprd-sideju');\n//ambiente pruebas\n//.should('include', 'identidad-pruebas-sideju')\n// Manejar login\n//ambiente preproductivo\ncy.origin('https://identidad-preprd-sideju.pj.gob.pe', () => {\n  //ambiente de pruebas\n  //cy.origin('https://identidad-pruebas-sideju.pj.gob.pe', () => {\n  cy.screenshot('Ingresando al Panel de Pruebas para el Login');\n  cy.get('#hiddenUsername', {\n    timeout: 10000\n  }).invoke('val', Cypress.env('username'));\n  cy.get('#hiddenPassword').invoke('val', Cypress.env('password'));\n  cy.screenshot('Ingresando Usuario y Contraseña');\n  cy.get('#kc-login').click();\n});\n// Validar regreso al portal\ncy.location('origin', {\n  timeout: 20000\n})\n//ambiente preproductivo     \n.should('include', 'panel-preprd-sideju');\n//ambiente de pruebas\n//.should('include', 'panel-pruebas-sideju')\n//Click en registrar nuevo expediente  \n//cy.get('[data-testid=\"NEW_PROCESS\"]', { timeout: 20000 })\ncy.get('[data-testid=\"new-dropdown\"]', {\n  timeout: 20000\n}).should('be.visible').click();\n//  cy.contains('[role=\"option\"]', 'Nuevo expediente digital')  .click();\n//cy.get('[data-testid=\"NEW_PROCESS\"] > .MuiButton-label > .jss331').click();\ncy.get('[data-testid=\"NEW_PROCESS\"]', {\n  timeout: 10000\n}).click();\ncy.screenshot('Ingresando a la pantalla principal del EJE');\n//  seleccionando instancia\n//Seleccionar Instancia: Juzgado Paz Letrado\n//cy.get('[data-testid=\"select-codigo_instancia\"]').click();\n//cy.contains('[role=\"option\"]', '2 - Juzgado paz letrado').should('be.visible').click();\n// seleccionando especialidad\ncy.get('[data-testid=\"select-competence\"]').first().click();\ncy.contains('[role=\"option\"]', '1 - LABORAL').click();\n//seleccionando subespecialidad\n// Abrir combo de Subespecialidad\ncy.get('[data-testid=\"select-competence\"]').last().click();\n// Seleccionar opción Subespecialidad\ncy.contains('[role=\"option\"]', '1 - Nueva Ley Procesal del Trabajo').should('be.visible').click();\n// seleccionando motivo de ingreso\ncy.get('[data-testid=\"select-codigo_motivo_distribuicao\"]').click();\n//ambiente de pruebas\n//cy.contains('[role=\"option\"]', '53 - DEMANDA')\n//ambiente Pre-productivo\n//cy.contains('[role=\"option\"]', '21 - DEMANDA')\n//.click();\ncy.contains('[role=\"option\"]', '325 - DEMANDA').click();\n//seleccionando via procedimental\n// Hace clic en el combo (input con id=\"select-class\")\ncy.get('#select-class').click();\n// Selecciona la opción por su texto visible\n//cy.contains('[role=\"option\"]','1004 - Abreviado').click();\ncy.contains('[role=\"option\"]', '4 - Abreviado').click();\n// Hace clic en el combo de Materia principal\ncy.get('#select-main-subject').click();\n// Selecciona la opción por su texto visible dentro de role=\"option\"\n//ambiente PRUEBAS\n//cy.contains('[role=\"option\"]', '10524 - Créditos Laborales').click();\n//ambiente PRE-productivo\n//  cy.contains('[role=\"option\"]', '10076 - Actos de Hostilidad del Empleador').click();\n//cy.contains('[role=\"option\"]', '11314 - Pago de Honorarios').click();\ncy.contains('[role=\"option\"]', '486 - Pago de Honorarios').click();\n// Hace clic en el combo de Submateria\ncy.get('#select-complementary-subject').click();\n// Selecciona la opción por su texto visible dentro de role=\"option\"\n//    cy.contains('[role=\"option\"]', '10071 - Actos Contra la Moral').click();\n//  cy.contains('[role=\"option\"]', '84012 - Pago de Honorarios').click();\ncy.contains('[role=\"option\"]', '486 - Pago de Honorarios').click();\n//Hacer click en el check \n// Hacer check en el checkbox \"cuantia-indeterminada\"\n//cy.get('[data-testid=\"checkbox-cuantia-indeterminada\"]', { timeout: 10000 }) .should('be.visible') .check();\n// Hacer check en el checkbox \"cuantia-indeterminada\"\ncy.get('[data-testid=\"checkbox-cuantia-indeterminada\"]', {\n  timeout: 10000\n}).check({\n  force: true\n});\n//Ingresando la sumilla\n// Hacer clic en el textarea y escribir \"xxx\"\ncy.get('[data-testid=\"textarea-sumilla\"]', {\n  timeout: 10000\n}).should('be.visible').click().clear().type('xxx');\n//Ingresando folio\n// Hacer clic en el textbox y escribir \"1\"\ncy.get('[data-testid=\"input-numero-folhas\"]', {\n  timeout: 10000\n}).should('be.visible').click().clear().type('1');\ncy.screenshot('Ingresando datos para el Ingreso de Expediente');\n// ------------Seleccionando Opcion Agregar parte DEMANDANTE\n// Paso 1: clic en Proseguir\ncy.get('[data-testid=\"save-button\"]').click();\n// Paso 2: esperar hasta que el botón \"Agregar parte\" esté habilitado\ncy.get('[data-testid=\"dropdown-adicionar-parte\"]', {\n  timeout: 10000\n}).should('be.visible').and('not.be.disabled');\n// Paso 3: clic en el combo\ncy.get('[data-testid=\"dropdown-adicionar-parte\"]').click();\n// Paso 4: seleccionar la opción Demandante usando el data-testid estable\ncy.get('[data-testid=\"dropdownitem-adicionar-parte-ATIVO\"]', {\n  timeout: 10000\n}).should('be.visible').click({\n  force: true\n});\n// seleccionando datos de demandante\n// Paso 1: clic en el combo \"Tipo de persona\"\ncy.get('#react-select-13-input').click();\n// Paso 2: seleccionar la opción \"Persona Natural\"\ncy.contains('[role=\"option\"]', 'Persona Natural').click({\n  force: true\n});\n// Paso 3: localizar el input por su id y escribir el documento\ncy.get('#numero_documento_principal').should('be.visible').type('29086619');\n// Paso 4: hacer clic en el label\ncy.get('label[for=\"numero_documento_principal\"]').click({\n  force: true\n});\n// Paso 5: esperar hasta que el botón Consultar Reniec esté visible y habilitado\ncy.get('[data-testid=\"button-consultar-reniec\"]', {\n  timeout: 10000\n}).should('be.visible').and('not.be.disabled');\n// Paso 6: hacer clic en el botón\ncy.get('[data-testid=\"button-consultar-reniec\"]').click();\n// Paso 7: esperar hasta que el botón Guardar esté visible y habilitado\n//cy.get('[data-testid=\"button-salvar-parte\"]', { timeout: 10000 })\n// .should('be.visible')\n//.and('not.be.disabled');\ncy.screenshot('Ingresando la parte Demandante');\n// Paso 8: hacer clic en el botón Guardar\ncy.get('[data-testid=\"button-salvar-parte\"]').click();\n//cy.get('[data-testid=\"button-salvar-parte\"] > .MuiButton-label > .jss46').click();\n// Paso 9: verificar que aparezca el bloque HTML esperado\ncy.get('ul.global-list', {\n  timeout: 20000\n}).should('be.visible');\n// Paso 10: verificar que el documento ingresado esté presente\ncy.contains('29086619', {\n  timeout: 20000\n}).should('be.visible');\n// --------------Seleccionando Opcion Agregar parte DEMANDADO\n// Paso 1: clic en Proseguir\n//cy.get('[data-testid=\"save-button\"]').click();\n// Paso 2: esperar hasta que el botón \"Agregar parte\" esté habilitado\ncy.get('[data-testid=\"dropdown-adicionar-parte\"]', {\n  timeout: 10000\n}).should('be.visible').and('not.be.disabled');\n// Paso 3: clic en el combo\ncy.get('[data-testid=\"dropdown-adicionar-parte\"]').click();\n// Paso 4: seleccionar la opción Demandante usando el data-testid estable\ncy.get('[data-testid=\"dropdownitem-adicionar-parte-PASSIVO\"]', {\n  timeout: 10000\n}).should('be.visible').click({\n  force: true\n});\n// seleccionando datos de demandante\n// Paso 1: clic en el combo \"Tipo de persona\"\n//cy.get('#react-select-12-input').click();\ncy.get('[data-testid=\"select-tipo-pessoa\"] > .css-11ecpbf-control').click();\n// Paso 2: seleccionar la opción \"Persona Natural\"\ncy.contains('[role=\"option\"]', 'Persona Natural').click({\n  force: true\n});\n// Paso 3: localizar el input por su id y escribir el documento\ncy.get('#numero_documento_principal').should('be.visible').type('29086626');\n// Paso 4: hacer clic en el label\ncy.get('label[for=\"numero_documento_principal\"]').click({\n  force: true\n});\n// Paso 5: esperar hasta que el botón Consultar Reniec esté visible y habilitado\ncy.get('[data-testid=\"button-consultar-reniec\"]', {\n  timeout: 10000\n}).should('be.visible').and('not.be.disabled');\n// Paso 6: hacer clic en el botón\ncy.get('[data-testid=\"button-consultar-reniec\"]').click();\n// Paso 7: esperar hasta que el botón Guardar esté visible y habilitado\n//cy.get('[data-testid=\"button-salvar-parte\"]', { timeout: 10000 })\n// .should('be.visible')\n//.and('not.be.disabled');\ncy.screenshot('Ingresando la parte Demandado');\n// Paso 8: hacer clic en el botón Guardar\ncy.get('[data-testid=\"button-salvar-parte\"]').dblclick();\n//cy.get('[data-testid=\"button-salvar-parte\"] > .MuiButton-label > .jss46').click();\n// Realizando la distribucion\n// Esperar 10 segundos para que se muestren los mensajes de éxito\ncy.wait(10000);\n// Hacer check en el checkbox \"Presentante\"\ncy.get('input[aria-label=\"Presentante\"]', {\n  timeout: 10000\n}).check({\n  force: true\n});\ncy.wait(10000);\n// Paso extra: hacer scroll hasta el botón Distribuir\ncy.get('[data-testid=\"button-distribute\"]', {\n  timeout: 30000\n}).scrollIntoView().should('be.visible').and('not.be.disabled').click();\ncy.screenshot('No hay Arancel ni deposito');\n// Esperar a que aparezca el modal\ncy.get('[role=\"dialog\"]', {\n  timeout: 20000\n}).should('be.visible');\n// Marcar el checkbox \"No se adjunta arancel\"\ncy.get('[data-testid=\"confirma-sin-arancel\"]', {\n  timeout: 10000\n}).check({\n  force: true\n});\n// Marcar el checkbox \"No se adjunta depósito judicial\"\ncy.get('[data-testid=\"confirma-sin-deposito\"]', {\n  timeout: 10000\n}).check({\n  force: true\n});\n// Finalmente hacer clic en el botón Confirmar\ncy.get('[data-testid=\"pagos-confirmar\"]', {\n  timeout: 10000\n}).should('not.be.disabled').click();\ncy.screenshot('Realizando la distribucion');\n// Capturar el número de expediente después de la distribución\n//cy.get('[data-testid=\"number-process\"]', { timeout: 20000 })\n//.scrollIntoView() // mover la vista hasta el elemento\n//.should('be.visible')\n//.invoke('text')\n//.then((expediente) => {\n// cy.log('Número de expediente generado:', expediente);\n//Cypress.env('numeroExpediente', expediente); // guardar en variable global\n// });\nfunction esperarExpediente() {\n  cy.get('[data-testid=\"number-process\"]', {\n    timeout: 60000\n  }).invoke('text').then(text => {\n    if (text.includes('Esperando')) {\n      cy.wait(1000); // esperar 1 segundo\n      esperarExpediente(); // reintentar\n    } else {\n      cy.log('Número de expediente generado:', text);\n      cy.writeFile('cypress/fixtures/expediente.json', {\n        numeroExpediente: text\n      });\n    }\n  });\n}\nesperarExpediente();",
+              "err": {},
+              "uuid": "2943fc17-9ff9-44e9-b48f-ad0ec8342a49",
+              "parentUUID": "b81ce59a-9c47-4087-b75c-2807c7d4b5bc",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "2943fc17-9ff9-44e9-b48f-ad0ec8342a49"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 53001,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}
